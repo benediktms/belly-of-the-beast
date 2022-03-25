@@ -1,13 +1,26 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CollisionHanReloaddler : MonoBehaviour
+public class CollisionHandler : MonoBehaviour
 {
     [SerializeField]
     float crashDelay = 1f;
 
     [SerializeField]
     float nextLevelDelay = 1f;
+
+    [SerializeField]
+    AudioClip explosionSFX;
+
+    [SerializeField]
+    AudioClip successSFX;
+
+    AudioSource audioSource;
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     private void OnCollisionEnter(Collision other)
     {
@@ -18,9 +31,6 @@ public class CollisionHanReloaddler : MonoBehaviour
                 break;
             case "Finish":
                 Invoke("StartSuccessSequence", nextLevelDelay);
-                break;
-            case "Fuel":
-                Debug.Log("You found some fuel! Too bad it doesn't do anything.");
                 break;
             default:
                 StartCrashSequence();
@@ -33,13 +43,26 @@ public class CollisionHanReloaddler : MonoBehaviour
         // TODO: add sound effect
         // TODO: add particle effect
         GetComponent<Movement>().enabled = false;
+
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(explosionSFX);
+        }
+
         Invoke("Reload", crashDelay);
     }
 
     private void StartSuccessSequence()
     {
         // TODO: add sound effect
+        // TODO: add particle effect
         GetComponent<Movement>().enabled = false;
+
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(successSFX);
+        }
+
         Invoke("LoadNextLevel", nextLevelDelay);
     }
 
