@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,8 +17,7 @@ public class CollisionHanReloaddler : MonoBehaviour
                 Debug.Log("Don't worry this is ok");
                 break;
             case "Finish":
-                // Invoke("LoadNextLevel", nextLevelDelay);
-                LoadNextLevel();
+                Invoke("StartSuccessSequence", nextLevelDelay);
                 break;
             case "Fuel":
                 Debug.Log("You found some fuel! Too bad it doesn't do anything.");
@@ -33,8 +30,17 @@ public class CollisionHanReloaddler : MonoBehaviour
 
     private void StartCrashSequence()
     {
+        // TODO: add sound effect
+        // TODO: add particle effect
         GetComponent<Movement>().enabled = false;
         Invoke("Reload", crashDelay);
+    }
+
+    private void StartSuccessSequence()
+    {
+        // TODO: add sound effect
+        GetComponent<Movement>().enabled = false;
+        Invoke("LoadNextLevel", nextLevelDelay);
     }
 
     private void Reload()
