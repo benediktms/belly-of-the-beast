@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Movement : MonoBehaviour
@@ -11,14 +9,14 @@ public class Movement : MonoBehaviour
     float rotationThrust = 100f;
 
     Rigidbody rb;
+    AudioSource audioSource;
 
-    // Start is called before the first frame update
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
     }
 
-    // Update is called once per frame
     private void Update()
     {
         ProcessThrust();
@@ -30,7 +28,16 @@ public class Movement : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
         {
             rb.AddRelativeForce(Vector3.up * forwardThrust * Time.deltaTime);
+            if (!audioSource.isPlaying)
+            {
+                audioSource.Play();
+            }
         }
+        else
+        {
+            audioSource.Stop();
+        }
+
     }
 
     private void ProcessRotation()
