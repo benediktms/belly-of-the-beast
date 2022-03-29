@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,22 +16,53 @@ public class CollisionHandler : MonoBehaviour
     [SerializeField]
     AudioClip successSFX;
 
+    [SerializeField]
+    ParticleSystem explosionParticles;
+
+    [SerializeField]
+    ParticleSystem successParticles;
+
+    [SerializeField]
+    ParticleSystem rocketJet;
+
     AudioSource audioSource;
+
+    bool isTransitioning = false;
+    bool isCollisionDisabled = false;
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
     }
 
+    private void Update()
+    {
+        RespondToDebugKeys();
+    }
+
+    private void RespondToDebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLevel();
+        }
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            isCollisionDisabled = !isCollisionDisabled;
+        }
+    }
+
     private void OnCollisionEnter(Collision other)
     {
+        if (isTransitioning || isCollisionDisabled) return;
+
         switch (other.gameObject.tag)
         {
             case "Friendly":
-                Debug.Log("Don't worry this is ok");
+                // this is ok
                 break;
             case "Finish":
-                Invoke("StartSuccessSequence", nextLevelDelay);
+                StartSuccessSequence();
                 break;
             default:
                 StartCrashSequence();
@@ -40,28 +72,26 @@ public class CollisionHandler : MonoBehaviour
 
     private void StartCrashSequence()
     {
-        // TODO: add sound effect
-        // TODO: add particle effect
+        rocketJet.Stop();
+        isTransitioning = true;
+        audioSource.Stop();
         GetComponent<Movement>().enabled = false;
 
-        if (!audioSource.isPlaying)
-        {
-            audioSource.PlayOneShot(explosionSFX);
-        }
+        audioSource.PlayOneShot(explosionSFX);
+        explosionParticles.Play();
 
         Invoke("Reload", crashDelay);
     }
 
     private void StartSuccessSequence()
     {
-        // TODO: add sound effect
-        // TODO: add particle effect
+        rocketJet.Stop();
+        isTransitioning = true;
+        audioSource.Stop();
         GetComponent<Movement>().enabled = false;
 
-        if (!audioSource.isPlaying)
-        {
-            audioSource.PlayOneShot(successSFX);
-        }
+        audioSource.PlayOneShot(successSFX);
+        successParticles.Play();
 
         Invoke("LoadNextLevel", nextLevelDelay);
     }
