@@ -11,6 +11,15 @@ public class Movement : MonoBehaviour
     [SerializeField]
     AudioClip thrustersSFX;
 
+    [SerializeField]
+    ParticleSystem mainThrusters;
+
+    [SerializeField]
+    ParticleSystem leftThrusters;
+
+    [SerializeField]
+    ParticleSystem rightThrusters;
+
     Rigidbody rb;
     AudioSource audioSource;
 
@@ -30,30 +39,64 @@ public class Movement : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            rb.AddRelativeForce(Vector3.up * forwardThrust * Time.deltaTime);
-            if (!audioSource.isPlaying)
-            {
-                audioSource.PlayOneShot(thrustersSFX);
-            }
+            StartThrust();
         }
         else
         {
-            audioSource.Stop();
+            StopThrust();
         }
+    }
 
+    private void StartThrust()
+    {
+        rb.AddRelativeForce(Vector3.up * forwardThrust * Time.deltaTime);
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(thrustersSFX);
+        }
+        mainThrusters.Play();
+    }
+
+    private void StopThrust()
+    {
+        audioSource.Stop();
+        mainThrusters.Stop();
     }
 
     private void ProcessRotation()
     {
         if (Input.GetKey(KeyCode.A))
         {
-            ApplyRotation(rotationThrust);
+            ThrustRight();
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            ApplyRotation(-rotationThrust);
+            ThrustLeft();
+        }
+        else
+        {
+            StopRotationalThrust();
         }
     }
+
+    private void ThrustLeft()
+    {
+        ApplyRotation(-rotationThrust);
+        leftThrusters.Play();
+    }
+
+    private void ThrustRight()
+    {
+        ApplyRotation(rotationThrust);
+        rightThrusters.Play();
+    }
+
+    private void StopRotationalThrust()
+    {
+        rightThrusters.Stop();
+        leftThrusters.Stop();
+    }
+
 
     private void ApplyRotation(float rotationThisFrame)
     {
